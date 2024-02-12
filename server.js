@@ -10,23 +10,17 @@ const client = new MongoClient(MONGODB_URI);
 
 app.use(cors());
 app.use(express.json());
-// Remove the line serving static files from the 'public' directory
-
 async function main() {
     try {
         await client.connect();
         console.log('Connected to MongoDB Atlas');
         const database = client.db('AfterSchoolActivities');
-
-        // Define a base URL variable for frontend requests
         const baseURL = process.env.BASE_URL || '';
 
         // Define routes for frontend files
         app.get('/', (req, res) => {
-            res.sendFile(path.join(__dirname, 'index.html')); // Change to the correct path
+            res.sendFile(path.join(__dirname, 'index.html')); 
         });
-
-        // Define a route to get all lessons with search functionality
         app.get(`${baseURL}/api/lessons`, async (req, res) => {
             try {
                 let query = {}; // Initialize an empty query
@@ -38,7 +32,6 @@ async function main() {
                         ]
                     };
                 }
-                // Use the constructed query to find lessons
                 const lessons = await database.collection('lessons').find(query).toArray();
                 res.json(lessons);
             } catch (error) {
@@ -46,8 +39,6 @@ async function main() {
                 res.status(500).send('Internal Server Error');
             }
         });
-
-        // Define a route to get a lesson by ID
         app.get(`${baseURL}/api/lessons/:lessonId`, async (req, res) => {
             try {
                 const lessonId = req.params.lessonId;
@@ -62,8 +53,6 @@ async function main() {
                 res.status(500).send('Internal Server Error');
             }
         });
-
-        // Define a route to update lesson spaces when adding to cart
         app.post(`${baseURL}/api/orders/place`, async (req, res) => {
             try {
                 const { name, phone, lessonIds } = req.body;
