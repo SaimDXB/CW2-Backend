@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edventures</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <style>
+        /* Styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        /* Styling for the main title */
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        /* Styling for the lesson container */
+        .lesson-container {
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+        /* Styling for the form container */
+        .form-container {
+            margin-top: 20px;
+        }
+        /* Styling for the rating system */
+        .rating {
+            direction: rtl;
+        }
+        .rating a {
+            font-size: 1.5em;
+            color: #aaa;
+            text-decoration: none;
+        }
+        .rating a:hover,
+        .rating a:hover ~ a,
+        .rating a.active,
+        .rating a.active ~ a {
+            color: #fde16d;
+        }
+        /* Styling for the checkout button */
+        .checkout-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+        .checkout-button:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #534caf;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vue app container -->
+    <div id="app">
+        <!-- Main title -->
+        <h1>Edventures</h1>
+        <!-- Checkout button with a dynamic count of items in the cart, visible only when there are items in the cart -->
+        <button v-if="showProduct" class="checkout-button" v-on:click="toggleProductView">
+            <i class="fas fa-shopping-cart"></i> Checkout ({{ cart.length }})
+        </button>
+        <button v-else class="checkout-button" v-on:click="toggleProductView">
+            <i class="fas fa-home"></i> Home
+        </button>
+        
+        <!-- Vue conditional rendering: Show products if `showProduct` is true -->
+        <div v-if="showProduct">
+            <!-- Filter and sort options for lessons -->
+            <div>
+                Sort by:
+                <!-- Dropdown for sorting attribute -->
+                <select v-model="sortAttribute" @change="fetchLessons">
+                    <option value="">Select</option>
+                    <option value="subject">Subject</option>
+                    <option value="location">Location</option>
+                    <option value="price">Price</option>
+                    <option value="spaces">Spaces</option>
+                </select>
+                Order:
+                <!-- Dropdown for sorting order -->
+                <select v-model="sortOrder" @change="fetchLessons">
+                    <option value="">Select</option>
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+                Search:
+                <!-- Input for searching lessons -->
+                <input v-model="searchQuery" @input="fetchLessons" placeholder="Search lessons..." />
+            </div>
+            <!-- Display lessons in a container, with dynamic content based on filtered and sorted lessons -->
+            <div class="lesson-container" v-for="(lesson, index) in filteredAndSortedLessons">
+                <!-- Lesson Image -->
+                <img :src="lesson.image" alt="Lesson Image" style="max-width: 100%; max-height: 100px;">
+                <!-- Lesson Details -->
+                <h2>{{ lesson.subject }}</h2>
+                <p>Location: {{ lesson.location }}</p>
+                <p>Price: {{ lesson.price }}</p>
+                <p>Spaces: {{ lesson.spaces }}</p>
+                <!-- Add to Cart Functionality -->
+                <button v-on:click="addToCart(lesson)" v-if="hasSpaces(lesson)">
+                    Add to cart
+                </button>
+                <!-- Display message if no space is available -->
+                <p v-else>Out of space. Check back later.</p>
+                <!-- Rating System -->
+                <div class="rating">
+                    <!-- Loop to create star rating, with active class based on the lesson's rating -->
+                    <a href="#" v-on:click.prevent="rateLesson(lesson, 5)" v-bind:class="{ active: lesson.rating >= 5 }">★</a>
+                    <a href="#" v-on:click.prevent="rateLesson(lesson, 4)" v-bind:class="{ active: lesson.rating >= 4 }">★</a>
+                    <a href="#" v-on:click.prevent="rateLesson(lesson, 3)" v-bind:class="{ active: lesson.rating >= 3 }">★</a>
+                    <a href="#" v-on:click.prevent="rateLesson(lesson, 2)" v-bind:class="{ active: lesson.rating >= 2 }">★</a>
+                    <a href="#" v-on:click.prevent="rateLesson(lesson, 1)" v-bind:class="{ active: lesson.rating >= 1 }">★</a>
+                </div>
+            </div>
+        </div>
+        <!-- Vue conditional rendering: Show cart and checkout form if `showProduct` is false -->
+        <div v-else>
+            <!-- Display items in the cart -->
+            <div class="cart-item" v-for="(lessonId, index) in cart">
+                <div v-if="currentLesson = getLessonById(lessonId)">
+                    <!-- Lesson Details from the cart -->
+                    <h2>{{ currentLesson.subject }}</h2>
+                    <p>Location: {{ currentLesson.location }}</p>
+                    <p>Price: {{ currentLesson.price }}</p>
+                    <!-- Remove from Cart Functionality -->
+                    <button v-on:click="removeFromCart(lessonId)">
+                        Remove from cart
+                    </button>
+                </div>
+            </div>
+            <!-- Checkout Form -->
+            <div class="form-container">
+                <h2>Checkout</h2>
+                <!-- Input for the customer's name -->
+                <p><strong>Name:</strong> <input v-model.trim="order.name" /></p>
+                <!-- Input for the customer's phone number -->
+                <p><strong>Phone Number:</strong> <input v-model.trim="order.phone" /></p>
+                <!-- Place Order button, enabled when the order is valid -->
+                <button v-if="isOrderValid" v-on:click="placeOrder">
+                    Place Order
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script src="lessons.js"></script>
+</body>
+</html>
