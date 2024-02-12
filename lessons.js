@@ -12,7 +12,7 @@ let app = new Vue({
         sortAttribute: '',
         sortOrder: '',
         searchQuery: '',
-        baseURL: 'http://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com', // AWS Elastic Beanstalk URL
+        baseURL: 'http://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com', 
     },
     computed: {
         isOrderValid: function () {
@@ -61,7 +61,7 @@ let app = new Vue({
                 })
                 .then(response => response.json())
                 .then(data => {
-                    this.updateLessonSpaces(); // Call the method to update lesson spaces
+                    this.updateLessonSpaces(); 
                     alert('Order submitted!');
                     this.cart = [];
                     this.showProduct = true;
@@ -74,7 +74,6 @@ let app = new Vue({
             }
         },
         updateLessonSpaces: function () {
-            // Send PUT request to update lesson spaces for each lesson in the cart
             Promise.all(this.cart.map(lessonId => {
                 const lesson = this.getLessonById(lessonId);
                 return fetch(`${this.baseURL}/api/lessons/${lessonId}`, {
@@ -90,7 +89,7 @@ let app = new Vue({
                     if (!response.ok) {
                         throw new Error('Failed to update lesson spaces');
                     }
-                    return response.json(); // Return the response JSON if successful
+                    return response.json(); 
                 });
             }))
             .then(responses => {
@@ -99,9 +98,7 @@ let app = new Vue({
                 if (hasError) {
                     throw new Error('One or more lesson space updates failed');
                 }
-                // If all updates are successful, display a success message
                 alert('Lesson spaces updated successfully!');
-                // Clear the cart and reset the order form
                 this.cart = [];
                 this.order = { name: '', phone: '' };
                 this.showProduct = true;
@@ -124,10 +121,9 @@ let app = new Vue({
             fetch(`${this.baseURL}/api/lessons?q=${this.searchQuery}&sort=${this.sortAttribute}&order=${this.sortOrder}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Fetched lessons:', data); // Debug statement
+                    console.log('Fetched lessons:', data); 
                     this.lessons = data.map(lesson => ({
                         ...lesson,
-                        // Prepend base URL to image path
                         image: `${this.baseURL}${lesson.image}`
                     }));
                 })
@@ -135,7 +131,6 @@ let app = new Vue({
         }
     },
     mounted() {
-        // Fetch lessons from the backend when the component is mounted
         this.fetchLessons();
     }
 });
