@@ -46,7 +46,7 @@ let app = new Vue({
         },
         placeOrder: function () {
             if (this.isOrderValid) {
-                fetch('http://localhost:3000/api/orders/place', {
+                fetch('https://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com/api/orders/place', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ let app = new Vue({
         updateLessonSpaces: function () {
             Promise.all(this.cart.map(lessonId => {
                 const lesson = this.getLessonById(lessonId);
-                return fetch(`http://localhost:3000/api/lessons/${lessonId}`, {
+                return fetch(`https://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com/api/lessons/${lessonId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ let app = new Vue({
             return lesson.spaces > 0;
         },
         fetchLessons: function () {
-            fetch(`http://localhost:3000/api/lessons?q=${this.searchQuery}&sort=${this.sortAttribute}&order=${this.sortOrder}`)
+            fetch(`https://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com/api/lessons?q=${this.searchQuery}&sort=${this.sortAttribute}&order=${this.sortOrder}`)
                 .then(response => response.json())
                 .then(data => {
                     this.lessons = data.map(lesson => ({
