@@ -1,3 +1,6 @@
+// Define the base URL for your API
+const BASE_URL = "https://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com/api";
+
 let app = new Vue({
     el: '#app',
     data: {
@@ -46,7 +49,7 @@ let app = new Vue({
         },
         placeOrder: function () {
             if (this.isOrderValid) {
-                fetch('https://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com/api/orders/place', {
+                fetch(`${BASE_URL}/orders/place`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -74,7 +77,7 @@ let app = new Vue({
         updateLessonSpaces: function () {
             Promise.all(this.cart.map(lessonId => {
                 const lesson = this.getLessonById(lessonId);
-                return fetch(`https://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com/api/lessons/${lessonId}`, {
+                return fetch(`${BASE_URL}/lessons/${lessonId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -115,12 +118,12 @@ let app = new Vue({
             return lesson.spaces > 0;
         },
         fetchLessons: function () {
-            fetch(`https://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com/api/lessons?q=${this.searchQuery}&sort=${this.sortAttribute}&order=${this.sortOrder}`)
+            fetch(`${BASE_URL}/lessons?q=${this.searchQuery}&sort=${this.sortAttribute}&order=${this.sortOrder}`)
                 .then(response => response.json())
                 .then(data => {
                     this.lessons = data.map(lesson => ({
                         ...lesson,
-                        image: `http://localhost:3000${lesson.image}`
+                        image: `https://ed21test-env.eba-f3k3idms.eu-west-2.elasticbeanstalk.com${lesson.image}`
                     }));
                 })
                 .catch(error => console.error('Error fetching lessons:', error));
